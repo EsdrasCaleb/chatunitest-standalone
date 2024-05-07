@@ -6,7 +6,7 @@ This repository is a standalone version of ChatUniTest, which is a tool to gener
 git clone https://github.com/ZJU-ACES-ISE/chatunitest-standalone.git 
 cd chatunitest-standalone
 ```
-2. Run `mvn package`, then the jar file [chatunitest-standalone-1.0.0.jar](target%2Fchatunitest-standalone-1.0.0.jar) will be generated in the target folder.
+2. Run `mvn package`, then the jar file `chatunitest-standalone-1.0.0.jar` will be generated in the target folder.
 3. Prepare the environment file named `chatunitest.env` for your project, which should contain the following information, here is an example of the environment file for the project a4j:
 ```shell
 apiKeys=xxx
