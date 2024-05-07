@@ -1,5 +1,5 @@
 # ChatUniTest Standalone
-
+This repository is a standalone version of ChatUniTest, which is a tool to generate unit tests for any java project in commandline, specifically designed for our experiments of sf110 projects.
 ## step to run
 1. Clone the repository
 ```shell
