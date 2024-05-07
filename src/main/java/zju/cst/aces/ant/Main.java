@@ -63,7 +63,7 @@ public class Main {
                             .append(absProjectPath).append(":")
                             .append(absProjectPath.resolve("lib")).append(":")
                             .append(absProjectPath.resolve("test-lib")).append(":")
-                            .append(buildPath)
+                            .append(buildPath).append(":")
                             .append(dependencyPath).append("\n");
                     FileUtils.writeStringToFile(envFilePath.toFile(), content.toString(), "UTF-8");
                 } catch (IOException e) {
