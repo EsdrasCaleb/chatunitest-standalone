@@ -59,7 +59,7 @@ public class EnvReader {
     }
 
     public File getBasedir() {
-        return new File(this.properties.getProperty("basedir"));
+        return new File(this.properties.getProperty("baseDir"));
     }
 
     public String getPackaging() {

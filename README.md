@@ -14,7 +14,6 @@ url=
 model=
 enableMultithreading=true
 parentEnvPath=
-classPaths=a4j
 baseDir=/Users/chenyi/Downloads/sf110-chatgpt/sf110/SF110-src/2_a4j
 groupId=com.example
 artifactId=a4j
