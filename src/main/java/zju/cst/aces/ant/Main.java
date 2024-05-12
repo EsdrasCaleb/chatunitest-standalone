@@ -68,7 +68,7 @@ public class Main {
                     Path absProjectPath = file.toPath().toAbsolutePath();
                     content.append("apiKeys=").append(apiKey).append("\n");
                     content.append("url=").append(url).append("\n");
-                    content.append("model=\n");
+                    content.append("model=").append(model).append("\n");
                     content.append("enableMultithreading=").append(true).append("\n");
                     content.append("parentEnvPath=\n");
                     content.append("baseDir=").append(absProjectPath).append("\n");
