@@ -54,7 +54,7 @@ public class MyProject implements Project {
         return env.getBuildPath();
     }
 
-    @Override
+
     public List<String> getClassPaths() {
         return env.getClassPaths();
     }

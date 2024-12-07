@@ -28,3 +28,13 @@ Remember to add the `dependency` in the `resources` to the `classPaths` property
 ```shell
 java -jar target/chatunitest-standalone-1.0.0.jar path_to_your_project_env_file project
 ```
+
+This project includes code or binaries from the following third-party projects:
+
+1. **llama3.java** (https://github.com/mukel/llama3.java)
+   - License: Apache License 2.0
+   - Copyright: mukel
+
+2. **qwen2.svm.java** (https://github.com/mukel/qwen2.svm.java)
+   - License: Apache License 2.0
+   - Copyright: mukel
