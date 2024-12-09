@@ -23,7 +23,7 @@ public class TestRunnerImpl implements Runner {
 
     public void runClass(String fullClassName) {
         try {
-            new TestClssRunner(config, fullClassName).start();
+            new TestClassRunner(config, fullClassName).start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

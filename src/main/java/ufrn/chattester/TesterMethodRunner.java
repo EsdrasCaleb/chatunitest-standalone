@@ -74,6 +74,8 @@ public class TesterMethodRunner extends MethodRunner {
             record.setAttempt(num);
             List<Message> prompt;
             PromptTemplate pt = this.promptGenerator.promptTemplate;
+            config.getLog().info("Path:"+config.getExamplePath()+" cname "+promptInfo.className);
+
             pt.buildDataModel(config, promptInfo);
 
             if (rounds == 0) {

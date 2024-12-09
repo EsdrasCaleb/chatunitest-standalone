@@ -52,7 +52,6 @@ public class TestTask {
             String fullClassName = getFullClassName(config, className);
             ClassInfo classInfo = AbstractRunner.getClassInfo(config, fullClassName);
             MethodInfo methodInfo = null;
-            log.warn("1");
             if (methodName.matches("\\d+")) { // use method id instead of method name
                 String methodId = methodName;
                 for (String mSig : classInfo.methodSigs.keySet()) {
@@ -134,24 +133,22 @@ public class TestTask {
         ProjectParser parser = new ProjectParser(config);
         parser.parse();
         List<String> classPaths = ProjectParser.scanSourceDirectory(project);
-        if (config.isEnableMultithreading() == true) {
-            projectJob(classPaths);
-        } else {
-            for (String classPath : classPaths) {
-                String className = classPath.substring(classPath.lastIndexOf(File.separator) + 1, classPath.lastIndexOf("."));
-                try {
-                    String fullClassName = getFullClassName(config, className);
-                    log.info("\n==========================\n[ChatUniTest] Generating tests for class < " + className + " > ...");
-                    ClassInfo info = AbstractRunner.getClassInfo(config, fullClassName);
-                    if (!Counter.filter(info)) {
-                        config.getLog().info("Skip class: " + classPath);
-                        continue;
-                    }
-                    this.runner.runClass(fullClassName);
-                } catch (IOException e) {
-                    log.error("[ChatUniTest] Generate tests for class " + className + " failed: " + e);
+        
+        for (String classPath : classPaths) {
+            String className = classPath.substring(classPath.lastIndexOf(File.separator) + 1, classPath.lastIndexOf("."));
+            try {
+                String fullClassName = getFullClassName(config, className);
+                log.info("\n==========================\n[ChatUniTest] Generating tests for class < " + className + " > ...");
+                log.info(fullClassName);
+                ClassInfo info = AbstractRunner.getClassInfo(config, fullClassName);
+                if (info == null || !Counter.filter(info)) {
+                    config.getLog().info("Skip class: " + classPath);
+                    continue;
                 }
-            }
+                this.runner.runClass(fullClassName);
+            } catch (IOException e) {
+                log.error("[ChatUniTest] Generate tests for class " + className + " failed: " + e);
+            }  
         }
 
         log.info("\n==========================\n[ChatUniTest] Generation finished");

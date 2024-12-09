@@ -17,6 +17,7 @@ public class CommandHandler {
         MyProject project = new MyProject(envReader);
         this.config = new Config.ConfigBuilder(project)
                 .tmpOutput(Paths.get("/tmp/chatunitest-info"))
+                .examplePath(Paths.get(envReader.getBasedir()+"/exampleUsage.json"))
                 .apiKeys(envReader.getApiKeys())
                 .url(envReader.getUrl())
                 .model(envReader.getModel())
@@ -43,13 +44,11 @@ public class CommandHandler {
     }
 
     private void handleProjectCommand(String[] args) {
-        System.out.println("Project command: " +args.toString());
-        //new Task(config, new RunnerImpl(config)).startProjectTask();
+        new TestTask(config, new TestRunnerImpl(config)).startProjectTask();
     }
 
     private void handleClassCommand(String[] args) {
-        System.out.println("Class command: " +args.toString());
-        //new Task(config, new RunnerImpl(config)).startClassTask(args[1]);
+        new TestTask(config, new TestRunnerImpl(config)).startClassTask(args[1]);
     }
 
     private void handleMethodCommand(String[] args) {
