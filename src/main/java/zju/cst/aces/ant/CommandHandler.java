@@ -3,6 +3,7 @@ package zju.cst.aces.ant;
 import zju.cst.aces.api.Task;
 import zju.cst.aces.api.config.*;
 import zju.cst.aces.api.impl.RunnerImpl;
+import ufrn.chattester.TesterMethodRunner;
 
 import java.nio.file.Paths;
 
@@ -40,14 +41,21 @@ public class CommandHandler {
     }
 
     private void handleProjectCommand(String[] args) {
-        new Task(config, new RunnerImpl(config)).startProjectTask();
+        System.out.println("Project command: " +args.toString());
+        //new Task(config, new RunnerImpl(config)).startProjectTask();
     }
 
     private void handleClassCommand(String[] args) {
-        new Task(config, new RunnerImpl(config)).startClassTask(args[1]);
+        System.out.println("Class command: " +args.toString());
+        //new Task(config, new RunnerImpl(config)).startClassTask(args[1]);
     }
 
     private void handleMethodCommand(String[] args) {
-        new Task(config, new RunnerImpl(config)).startMethodTask(args[1], args[2]);
+        try{
+            TesterMethodRunner runner = new TesterMethodRunner(config,args[1], args[2]);
+            runner.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
