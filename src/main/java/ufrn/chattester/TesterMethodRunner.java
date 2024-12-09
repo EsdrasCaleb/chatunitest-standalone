@@ -74,13 +74,15 @@ public class TesterMethodRunner extends MethodRunner {
             record.setAttempt(num);
             List<Message> prompt;
             PromptTemplate pt = this.promptGenerator.promptTemplate;
-            config.getLog().info("Path:"+config.getExamplePath()+" cname "+promptInfo.className);
+            config.getLog().warn("Path:"+config.getExamplePath()+" cname "+promptInfo.className);
 
             pt.buildDataModel(config, promptInfo);
 
             if (rounds == 0) {
                 // generate method intention
                 config.getLog().info("Creating intention for method < " + methodInfo.methodName + " > ...");
+                config.getLog().warn("Prompt Temp " + pt.TEMPLATE_EXTRA);
+                config.getLog().warn("Error:"+promptInfo.errorMsg);
                 List<Message> intentionPrompt = this.promptGenerator.generateMessages(promptInfo, pt.TEMPLATE_EXTRA);
                 config.getLog().info("Using model");
                 ChatResponse response = ModelChatGenerator.chat(config, intentionPrompt);
