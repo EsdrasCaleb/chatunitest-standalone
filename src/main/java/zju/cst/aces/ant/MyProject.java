@@ -26,6 +26,7 @@ public class MyProject implements Project {
 
     @Override
     public String getPackaging() {
+        System.out.println("3");
         return env.getPackaging();
     }
 

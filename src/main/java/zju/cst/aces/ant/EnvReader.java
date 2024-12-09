@@ -26,6 +26,7 @@ public class EnvReader {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load env file: " + filePath, e);
         }
+        System.out.println(this.properties.toString());
     }
 
 
