@@ -1,5 +1,7 @@
 package zju.cst.aces.ant;
 
+import zju.cst.aces.api.Project;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
