@@ -1,5 +1,6 @@
 package ufrn.chattester;
 
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import zju.cst.aces.api.config.Config;
 import zju.cst.aces.api.impl.ChatGenerator;
 import zju.cst.aces.api.impl.PromptConstructorImpl;
@@ -8,6 +9,7 @@ import zju.cst.aces.prompt.PromptTemplate;
 import zju.cst.aces.runner.AbstractRunner;
 import zju.cst.aces.runner.MethodRunner;
 import zju.cst.aces.util.CodeExtractor;
+import zju.cst.aces.util.TestProcessor;
 
 import ufrn.chattester.ModelChatGenerator;
 import ufrn.chattester.CustomRepairImpl;
@@ -172,10 +174,11 @@ public class TesterMethodRunner extends MethodRunner {
                         );
                     }
                 }
+                config.getLog().warn("Prompt de correcao:"+prompt.toString());
             } else {
                 prompt = promptGenerator.generateMessages(promptInfo);
             }
-            config.getLog().info("Tring to generate tests with my function ");
+            //config.getLog().info("Tring to generate tests with my function ");
             // start generate test
             String code = generateTest(prompt, record);
             if (!record.isHasCode()) {
@@ -203,6 +206,7 @@ public class TesterMethodRunner extends MethodRunner {
                 return true;
             }
             config.getLog().info("Reparo falhou");
+
             record.setHasError(true);
             record.setErrorMsg(promptInfo.getErrorMsg());
         }
@@ -304,7 +308,7 @@ public class TesterMethodRunner extends MethodRunner {
         ChatResponse response = ModelChatGenerator.chat(config, prompt);
         String content = ModelChatGenerator.getContentByResponse(response);
         String code = ModelChatGenerator.extractCodeByContent(content);
-        config.getLog().info("[CODE]:\n" + code);
+        
         record.setPromptToken(response.getUsage().getPromptTokens());
         record.setResponseToken(response.getUsage().getCompletionTokens());
         record.setPrompt(prompt);
@@ -320,6 +324,79 @@ public class TesterMethodRunner extends MethodRunner {
         config.getLog().info("Code retrived returning");
         return code;
     }
+
+    public static boolean runTest(Config config, String fullTestName, PromptInfo promptInfo, int rounds) {
+        String testName = fullTestName.substring(fullTestName.lastIndexOf(".") + 1);
+        Path savePath = config.getTestOutput().resolve(fullTestName.replace(".", File.separator) + ".java");
+        if (promptInfo.getTestPath() == null) {
+            promptInfo.setTestPath(savePath);
+        }
+        config.getLog().warn(fullTestName);
+        TestProcessor testProcessor = new TestProcessor(fullTestName);
+        String code = promptInfo.getUnitTest();
+        if (rounds >= 1) {
+            code = testProcessor.addCorrectTest(promptInfo);
+        }
+        config.getLog().warn("<codigo>\n"+code+"</codigo>");
+        // Compilation
+        Path compilationErrorPath = config.getErrorOutput().resolve(testName + "_CompilationError_" + rounds + ".txt");
+        Path executionErrorPath = config.getErrorOutput().resolve(testName + "_ExecutionError_" + rounds + ".txt");
+        boolean compileResult = config.getValidator().semanticValidate(code, testName, compilationErrorPath, promptInfo);
+        if (!compileResult) {
+            config.getLog().info("Test for method < " + promptInfo.getMethodInfo().getMethodName() + " > compilation failed round " + rounds);
+            return false;
+        }
+        if (config.isNoExecution()) {
+            exportTest(code, savePath);
+            config.getLog().info("Test for method < " + promptInfo.getMethodInfo().getMethodName() + " > generated successfully round " + rounds);
+            return true;
+        }
+        
+        // Execution
+        TestExecutionSummary summary = config.getValidator().execute(fullTestName);
+        if (summary.getTestsFailedCount() > 0 || summary.getTestsSucceededCount() == 0) {
+            String testProcessed = testProcessor.removeErrorTest(promptInfo, summary);
+
+            // Remove errors successfully, recompile and re-execute test
+            if (testProcessed != null) {
+                config.getLog().debug("[Original Test]:\n" + code);
+                if (config.getValidator().semanticValidate(testProcessed, testName, compilationErrorPath, null)) {
+                    if (config.getValidator().runtimeValidate(fullTestName)) {
+                        exportTest(testProcessed, savePath);
+                        config.getLog().debug("[Processed Test]:\n" + testProcessed);
+                        config.getLog().info("Processed test for method < " + promptInfo.getMethodInfo().getMethodName() + " > generated successfully round " + rounds);
+                        return true;
+                    }
+                }
+                testProcessor.removeCorrectTest(promptInfo, summary);
+            }
+
+            // Set promptInfo error message
+            TestMessage testMessage = new TestMessage();
+            List<String> errors = new ArrayList<>();
+            summary.getFailures().forEach(failure -> {
+                for (StackTraceElement st : failure.getException().getStackTrace()) {
+                    if (st.getClassName().contains(fullTestName)) {
+                        errors.add("Error in " + failure.getTestIdentifier().getLegacyReportingName()
+                                + ": line " + st.getLineNumber() + " : "
+                                + failure.getException().toString());
+                    }
+                }
+            });
+            testMessage.setErrorType(TestMessage.ErrorType.RUNTIME_ERROR);
+            testMessage.setErrorMessage(errors);
+            promptInfo.setErrorMsg(testMessage);
+            exportError(code, errors, executionErrorPath);
+            testProcessor.removeCorrectTest(promptInfo, summary);
+            config.getLog().info("Test for method < " + promptInfo.getMethodInfo().getMethodName() + " > execution failed round " + rounds);
+            return false;
+        }
+//            summary.printTo(new PrintWriter(System.out));
+        exportTest(code, savePath);
+        config.getLog().info("Test for method < " + promptInfo.getMethodInfo().getMethodName() + " > compile and execute successfully round " + rounds);
+        return true;
+    }
+
     /* 
     public void exportRecord(PromptInfo promptInfo, ClassInfo classInfo, int attempt) {
         String methodIndex = classInfo.methodSigs.get(promptInfo.methodSignature);

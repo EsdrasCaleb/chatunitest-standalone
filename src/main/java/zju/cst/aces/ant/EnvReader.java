@@ -83,6 +83,10 @@ public class EnvReader {
         return Path.of(this.properties.getProperty("artifactPath"));
     }
 
+    public boolean getNoExecution(){
+        return this.properties.getProperty("noExecution").isEmpty() ? false : Boolean.parseBoolean(this.properties.getProperty("noExecution"));
+    }
+
     public Path getBuildPath() {
         return Path.of(this.properties.getProperty("buildPath"));
     }

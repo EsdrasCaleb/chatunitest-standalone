@@ -53,7 +53,6 @@ public class TestClassRunner extends ClassRunner {
                 .replace("package ", "")
                 .replace(".", File.separator)
                 .replace(";", "");
-        config.getLog().warn(packagePath);
         Path depMethodInfoPath = config.getParseOutput()
                 .resolve(packagePath)
                 .resolve(info.className)

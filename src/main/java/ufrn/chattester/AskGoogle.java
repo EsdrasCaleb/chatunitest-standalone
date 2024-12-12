@@ -15,7 +15,8 @@ import zju.cst.aces.dto.Message;
 
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -34,7 +35,6 @@ public class AskGoogle extends AskGPT {
         Dotenv dotenv = Dotenv.load();
         String apiKey = dotenv.get("G_KEY");
         int maxTry = 1;
-        config.getLog().info(chatMessages.toString());
         while (maxTry > 0) {
             Response response = null;
             try {
@@ -46,32 +46,29 @@ public class AskGoogle extends AskGPT {
 
                 ModelConfig modelConfig = config.getModel().getDefaultConfig();
                 StringBuilder inputText = new StringBuilder();
-                
-                // Initialize the array-like structure
-                List<Map<String, Object>> arrayMessageOb = new ArrayList<>();
-
                 for (Message message : chatMessages) {
-                    String messageS = message.getContent().trim()
-                    if(messageS!=""){
-                        Map<String, Object> messageOb = new HashMap<>();
-                        messageOb.put("role",message.getRole());
-                        Map<String, Object> text = new HashMap<>();
-                        text.put("text", messageS);
-                        messageOb.put("parts", text);
-                        arrayMessageOb.add(messageOb);
+                    if(message.getContent()!=""){
+                        inputText.append(message.getContent()).append(" ");
                     }
                 }
-                payload.put("contents", arrayMessageOb.toArray());
+                Map<String, Object> text = new HashMap<>();
+                text.put("text", inputText.toString().trim());
+                Map<String, Object>[] texts = (Map<String, Object>[]) new Map[]{text};
+                Map<String, Object> part = new HashMap<>();
+                part.put("parts", texts);
+                Map<String, Object>[] parts = (Map<String, Object>[]) new Map[]{part};
+                payload.put("contents", parts);
+                /*
                 payload.put("temperature", config.getTemperature());
                 
                 payload.put("frequency_penalty", config.getFrequencyPenalty());
                 payload.put("presence_penalty", config.getPresencePenalty());
                 
                 payload.put("maxTokens", config.getMaxResponseTokens());
-                
-                payload.put("stream", false);
+                */
+                //payload.put("stream", false);
                 String jsonPayload = GSON.toJson(payload);
-                config.getLog().info(jsonPayload);
+                //config.getLog().info(jsonPayload);
                 RequestBody body = RequestBody.create(MediaType.parse("application/json"), jsonPayload);
                 
                 Request request = new Request.Builder().url("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key="+apiKey).post(body).addHeader("Content-Type", "application/json").build();
@@ -87,12 +84,11 @@ public class AskGoogle extends AskGPT {
                 if (response.body() == null) throw new IOException("Response body is null.");
                 //config.getLog().info(response.body().string());
                 String responseString = ResponseAdapter.AdaptGoogle(response.body().string());
-                config.getLog().error(responseString);
+                //config.getLog().error(responseString);
                 ChatResponse chatResponse = GSON.fromJson(responseString, ChatResponse.class);
-                config.getLog().info(chatResponse.toString());
+                //config.getLog().info(chatResponse.toString());
                 response.close();
                 return chatResponse;
-                
             } catch (IOException e) {
                 if (response != null) {
                     response.close();

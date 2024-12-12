@@ -23,6 +23,7 @@ public class CommandHandler {
                 .model(envReader.getModel())
                 .enableMultithreading(envReader.isEnableMultithreading())
                 .classPaths(envReader.getClassPaths())
+                .noExecution(envReader.getNoExecution())
                 .build();
         config.print();
     }

@@ -27,7 +27,7 @@ public class CustomRepairImpl extends RepairImpl{
         PromptInfo promptInfo = promptConstructorImpl.getPromptInfo();
         promptInfo.setUnitTest(code);
         String fullClassName = promptInfo.getClassInfo().getPackageName() + "." + promptInfo.getClassInfo().getClassName();
-        if (MethodRunner.runTest(config, promptConstructorImpl.getFullTestName(), promptInfo, rounds)) {
+        if (TesterMethodRunner.runTest(config, promptConstructorImpl.getFullTestName(), promptInfo, rounds)) {
             config.getLog().info("Extraiu código");
             this.success = true;
             return code;

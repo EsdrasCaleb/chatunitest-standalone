@@ -9,4 +9,5 @@ ${other_method_sigs}
 ${method_body}
 }
 You are a professional who writes Java test methods.
-Please write a test method for the "${method_sig}" with the given Method intention.
+Please write a test method for the "${method_sig}" with the given Method intention. 
+Please provide an answer using only the single JUnit class that will be used in the test.
