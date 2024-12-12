@@ -40,14 +40,29 @@ public class CommandHandler {
     }
 
     private void handleProjectCommand(String[] args) {
-        new Task(config, new RunnerImpl(config)).startProjectTask();
+        try {
+            new Task(config, new RunnerImpl(config)).startProjectTask();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleClassCommand(String[] args) {
-        new Task(config, new RunnerImpl(config)).startClassTask(args[1]);
+        try {
+            new Task(config, new RunnerImpl(config)).startClassTask(args[1]);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleMethodCommand(String[] args) {
-        new Task(config, new RunnerImpl(config)).startMethodTask(args[1], args[2]);
+        try {
+            new Task(config, new RunnerImpl(config)).startMethodTask(args[1], args[2]);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
