@@ -88,6 +88,7 @@ public class Main {
                             .append(buildPath).append(":")
                             .append(dependencyPath).append("\n");
                     FileUtils.writeStringToFile(envFilePath.toFile(), content.toString(), "UTF-8");
+                    System.out.println("File saved in:"+srcPath.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

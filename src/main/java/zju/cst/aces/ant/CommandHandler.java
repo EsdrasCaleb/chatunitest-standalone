@@ -1,5 +1,6 @@
 package zju.cst.aces.ant;
 
+import zju.cst.aces.api.Project;
 import zju.cst.aces.api.Task;
 import zju.cst.aces.api.config.*;
 import zju.cst.aces.api.impl.RunnerImpl;
@@ -15,11 +16,12 @@ public class CommandHandler {
         MyProject project = new MyProject(envReader);
         this.config = new Config.ConfigBuilder(project)
                 .tmpOutput(Paths.get("/tmp/chatunitest-info"))
+                .model(envReader.getModel())
                 .apiKeys(envReader.getApiKeys())
                 .url(envReader.getUrl())
-                .model(envReader.getModel())
                 .enableMultithreading(envReader.isEnableMultithreading())
                 .classPaths(envReader.getClassPaths())
+                .phaseType("ChatTester")
                 .build();
         config.print();
     }
