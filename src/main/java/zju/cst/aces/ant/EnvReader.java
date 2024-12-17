@@ -85,7 +85,13 @@ public class EnvReader {
     public Path getBuildPath() {
         return Path.of(this.properties.getProperty("buildPath"));
     }
-
+    public String getPhase(){ return this.properties.getProperty("phase"); }
+    public int getTimeout(){
+        if(!this.properties.getProperty("timeout").isEmpty()){
+            return Integer.parseInt(this.properties.getProperty("timeout"));
+        }
+        return 5;
+    }
     public List<String> getClassPaths() {
         List<String> classPaths = new java.util.ArrayList<>(Collections.emptyList());
         String[] cp = this.properties.getProperty("classPaths").split(":");

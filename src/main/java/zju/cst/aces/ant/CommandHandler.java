@@ -21,7 +21,8 @@ public class CommandHandler {
                 .url(envReader.getUrl())
                 .enableMultithreading(envReader.isEnableMultithreading())
                 .classPaths(envReader.getClassPaths())
-                .phaseType("ChatTester")
+                .phaseType(envReader.getPhase())
+                .timeOut(envReader.getTimeout())
                 .build();
         config.print();
     }
