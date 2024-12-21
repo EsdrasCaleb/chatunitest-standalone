@@ -19,10 +19,14 @@ public class CommandHandler {
                 .model(envReader.getModel())
                 .apiKeys(envReader.getApiKeys())
                 .url(envReader.getUrl())
+                .pluginSign(envReader.getPlugin())
                 .enableMultithreading(envReader.isEnableMultithreading())
                 .classPaths(envReader.getClassPaths())
                 .phaseType(envReader.getPhase())
                 .timeOut(envReader.getTimeout())
+                .maxResponseTokens(envReader.getTokens())
+                .maxPromptTokens(envReader.getPromptTokens())
+                .temperature(envReader.getTemperature())
                 .build();
         config.print();
     }

@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import zju.cst.aces.api.config.Model;
+
 
 public class EnvReader {
 
@@ -86,11 +88,30 @@ public class EnvReader {
         return Path.of(this.properties.getProperty("buildPath"));
     }
     public String getPhase(){ return this.properties.getProperty("phase"); }
+    public String getPlugin(){return this.properties.getProperty("plugin");}
     public int getTimeout(){
-        if(!this.properties.getProperty("timeout").isEmpty()){
+        if(this.properties.containsKey("timeout")&&!this.properties.getProperty("timeout").isEmpty()){
             return Integer.parseInt(this.properties.getProperty("timeout"));
         }
         return 5;
+    }
+    public int getTokens(){
+        if(this.properties.containsKey("max_tokens")&&!this.properties.getProperty("max_tokens").isEmpty()){
+            return Integer.parseInt(this.properties.getProperty("max_tokens"));
+        }
+        return 1024;
+    }
+    public int getPromptTokens(){
+        if(this.properties.containsKey("max_prompt_tokens")&&!this.properties.getProperty("max_prompt_tokens").isEmpty()){
+            return Integer.parseInt(this.properties.getProperty("max_prompt_tokens"));
+        }
+        return 2600;
+    }
+    public double getTemperature(){
+        if(this.properties.containsKey("max_prompt_tokens")&&!this.properties.getProperty("max_prompt_tokens").isEmpty()){
+            return Double.parseDouble(this.properties.getProperty("max_prompt_tokens"));
+        }
+        return 0.5;
     }
     public List<String> getClassPaths() {
         List<String> classPaths = new java.util.ArrayList<>(Collections.emptyList());
