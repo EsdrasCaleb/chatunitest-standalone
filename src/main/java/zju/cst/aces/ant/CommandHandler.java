@@ -45,6 +45,18 @@ public class CommandHandler {
             case "method":
                 handleMethodCommand(command);
                 break;
+            case "test":
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    System.out.println("Cannot Sleep");
+                }
+                String commad = "";
+                if(command.length > 1) {
+                    commad = command[1];
+                }
+                System.out.println("Test ok "+commad);
+                break;
             default:
                 System.out.println("Unknown command: " + command);
         }
