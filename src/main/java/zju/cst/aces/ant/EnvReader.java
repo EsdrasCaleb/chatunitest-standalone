@@ -87,8 +87,14 @@ public class EnvReader {
     public Path getBuildPath() {
         return Path.of(this.properties.getProperty("buildPath"));
     }
+    public Path getChatUnitpath() {
+        System.out.println("Testpath:"+this.properties.getProperty("chatunitest-tests"));
+        return Path.of(this.properties.getProperty("chatunitest-tests"));
+    }
     public String getPhase(){ return this.properties.getProperty("phase"); }
     public String getPlugin(){return this.properties.getProperty("plugin");}
+    public String getBenchMarkCsv(){return this.properties.getProperty("benchmark_file");}
+
     public int getTimeout(){
         if(this.properties.containsKey("timeout")&&!this.properties.getProperty("timeout").isEmpty()){
             return Integer.parseInt(this.properties.getProperty("timeout"));
@@ -108,10 +114,16 @@ public class EnvReader {
         return 2600;
     }
     public double getTemperature(){
-        if(this.properties.containsKey("max_prompt_tokens")&&!this.properties.getProperty("max_prompt_tokens").isEmpty()){
-            return Double.parseDouble(this.properties.getProperty("max_prompt_tokens"));
+        if(this.properties.containsKey("temperature")&&!this.properties.getProperty("temperature").isEmpty()){
+            return Double.parseDouble(this.properties.getProperty("temperature"));
         }
         return 0.5;
+    }
+    public boolean getUseIntention(){
+        if(this.properties.containsKey("use_intention")&&!this.properties.getProperty("use_intention").isEmpty()){
+            return Boolean.parseBoolean(this.properties.getProperty("use_intention"));
+        }
+        return true;
     }
     public List<String> getClassPaths() {
         List<String> classPaths = new java.util.ArrayList<>(Collections.emptyList());

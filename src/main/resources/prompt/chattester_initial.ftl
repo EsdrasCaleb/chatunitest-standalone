@@ -1,3 +1,4 @@
+```java
 // Focal class
 ${class_sig} {
 ${fields}
@@ -8,6 +9,7 @@ ${other_method_sigs}
 // Focal method
 ${method_body}
 }
+```
 You are a professional who writes Java test methods.
 Write a test method for the "${method_sig}".
-Provide an answer using only the single JUnit class that will be used in the test.
+Provide the answer with just the source code of single JUnit class that will be used in the test.

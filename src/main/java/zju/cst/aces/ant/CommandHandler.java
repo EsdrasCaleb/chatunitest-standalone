@@ -27,6 +27,9 @@ public class CommandHandler {
                 .maxResponseTokens(envReader.getTokens())
                 .maxPromptTokens(envReader.getPromptTokens())
                 .temperature(envReader.getTemperature())
+                .useIntention(envReader.getUseIntention())
+                .testOutput(envReader.getChatUnitpath())
+                .benchMarkCsv(envReader.getBenchMarkCsv())
                 .build();
         config.print();
     }
@@ -41,6 +44,7 @@ public class CommandHandler {
                 break;
             case "method":
                 handleMethodCommand(command);
+                break;
             default:
                 System.out.println("Unknown command: " + command);
         }
