@@ -31,6 +31,7 @@ public class CommandHandler {
                 .testOutput(envReader.getChatUnitpath())
                 .benchMarkCsv(envReader.getBenchMarkCsv())
                 .sleepTime(envReader.getSleeptime())
+                .logFaultAssert(true)
                 .build();
         config.print();
     }
