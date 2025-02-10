@@ -101,6 +101,12 @@ public class EnvReader {
         }
         return 5;
     }
+    public int getSleeptime(){
+        if(this.properties.containsKey("sleeptime")&&!this.properties.getProperty("sleeptime").isEmpty()){
+            return Integer.parseInt(this.properties.getProperty("sleeptime"));
+        }
+        return 3000;
+    }
     public int getTokens(){
         if(this.properties.containsKey("max_tokens")&&!this.properties.getProperty("max_tokens").isEmpty()){
             return Integer.parseInt(this.properties.getProperty("max_tokens"));

@@ -15,7 +15,7 @@ public class CommandHandler {
         EnvReader envReader = new EnvReader(envFilePath);
         MyProject project = new MyProject(envReader);
         this.config = new Config.ConfigBuilder(project)
-                .tmpOutput(Paths.get("/tmp/chatunitest-info"))
+                .tmpOutput(Paths.get("/tmp/chatunitest-info"))//Usar outro temp para o projeto no env
                 .model(envReader.getModel())
                 .apiKeys(envReader.getApiKeys())
                 .url(envReader.getUrl())
@@ -30,6 +30,7 @@ public class CommandHandler {
                 .useIntention(envReader.getUseIntention())
                 .testOutput(envReader.getChatUnitpath())
                 .benchMarkCsv(envReader.getBenchMarkCsv())
+                .sleepTime(envReader.getSleeptime())
                 .build();
         config.print();
     }
@@ -44,6 +45,10 @@ public class CommandHandler {
                 break;
             case "method":
                 handleMethodCommand(command);
+                break;
+            case "csv":
+                ProcessMutationCsv processMuationCsv = new ProcessMutationCsv(config);
+                processMuationCsv.makeNewCsv(command[1]);
                 break;
             case "test":
                 try {
