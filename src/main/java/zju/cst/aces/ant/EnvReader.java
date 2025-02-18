@@ -131,6 +131,13 @@ public class EnvReader {
         }
         return true;
     }
+    public boolean getOnlyUpdateClass(){
+        if(this.properties.containsKey("onlyUpdateClass")&&!this.properties.getProperty("onlyUpdateClass").isEmpty()){
+            return Boolean.parseBoolean(this.properties.getProperty("onlyUpdateClass"));
+        }
+        return true;
+    }
+
     public List<String> getClassPaths() {
         List<String> classPaths = new java.util.ArrayList<>(Collections.emptyList());
         String[] cp = this.properties.getProperty("classPaths").split(":");

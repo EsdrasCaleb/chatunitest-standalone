@@ -28,6 +28,7 @@ public class CommandHandler {
                 .maxPromptTokens(envReader.getPromptTokens())
                 .temperature(envReader.getTemperature())
                 .useIntention(envReader.getUseIntention())
+                .onlyUpdateClass(envReader.getOnlyUpdateClass())
                 .testOutput(envReader.getChatUnitpath())
                 .benchMarkCsv(envReader.getBenchMarkCsv())
                 .sleepTime(envReader.getSleeptime())
