@@ -92,7 +92,7 @@ public class ProcessMutationCsv {
         int[] finalResult = new int[]{-1, -1, -1, -1, -1, -1,-1};
         for (String methodName : methodNames) {
             int[] mutationResults = performMutationTest(fullClassName, methodName, testFile);
-            writer.write(testFile + "," + String.join(",",
+            writer.write(testFile + ","+methodName+"," + String.join(",",
                     Arrays.stream(mutationResults).mapToObj(String::valueOf).toArray(String[]::new)));
             writer.newLine();
         }
