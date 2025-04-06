@@ -38,6 +38,7 @@ public class CommandHandler {
     }
 
     public void handle(String[] command) {
+        ProcessMutationCsv processMuationCsv = new ProcessMutationCsv(config);
         switch (command[0]) {
             case "project":
                 handleProjectCommand(command);
@@ -49,8 +50,10 @@ public class CommandHandler {
                 handleMethodCommand(command);
                 break;
             case "csv":
-                ProcessMutationCsv processMuationCsv = new ProcessMutationCsv(config);
                 processMuationCsv.makeNewCsv(command[1]);
+                break;
+            case "testcsv":
+                processMuationCsv.performCheckInCsv(command[1]);
                 break;
             case "test":
                 try {

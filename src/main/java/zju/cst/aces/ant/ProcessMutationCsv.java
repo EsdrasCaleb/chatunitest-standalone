@@ -66,19 +66,156 @@ public class ProcessMutationCsv {
                 if (!"FAILURE".equalsIgnoreCase(testResult)) {
                     int[] mutationResults;
                     if(methodName.equals("*")) {
-                        mutationResults = performMutationTest(className, testFile,writer);
+                        mutationResults = performMutationTestClass(className, testFile);
                     }
                     else{
                         mutationResults = performMutationTest(className, methodName, testFile);
-                        writer.write(testFile + "," + String.join(",",
-                                Arrays.stream(mutationResults).mapToObj(String::valueOf).toArray(String[]::new)));
-                        writer.newLine();
                     }
+                    writer.write(testFile + "," + String.join(",",
+                            Arrays.stream(mutationResults).mapToObj(String::valueOf).toArray(String[]::new)));
+                    writer.newLine();
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void performCheckInCsv(String fileName){
+        String outputFileName = fileName.replace(".csv", "_mutations.csv");
+
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(fileName));
+             BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFileName))) {
+
+            String header = reader.readLine();
+            if (header == null) {
+                System.err.println("CSV file is empty");
+                return;
+            }
+
+            List<String> headers = Arrays.asList(header.split(","));
+            int classIndex = headers.indexOf("class");
+            int methodIndex = headers.indexOf("method");
+            int resultIndex = headers.indexOf("result");
+            int fileIndex = headers.indexOf("file");
+
+            if (classIndex < 0 || methodIndex < 0 || resultIndex < 0 || fileIndex < 0) {
+                System.err.println("Invalid CSV format. Missing required columns.");
+                return;
+            }
+
+            writer.write("file,mutation_result");
+            writer.newLine();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                if (values.length <= Math.max(classIndex, Math.max(methodIndex, Math.max(resultIndex, fileIndex)))) {
+                    continue;
+                }
+
+                String className = values[classIndex];
+                String methodName = values[methodIndex];
+                String testResult = values[resultIndex];
+                String testFile = values[fileIndex];
+
+                if (!"FAILURE".equalsIgnoreCase(testResult)) {
+                    int[] mutationResults;
+                    performTest(className, testFile,writer);
+
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int[]  performTest(String fullClassName,String testFile, BufferedWriter writer) throws IOException {
+        ClassRunner cs;
+        try {
+            cs = new ClassRunner(config, fullClassName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String[] methodNames = extractMethodNames(cs.classInfo.methodSigs);
+        int[] finalResult = new int[]{-1, -1, -1, -1, -1, -1,-1};
+        for (String methodName : methodNames) {
+            int[] mutationResults = performTestOnMethod(fullClassName, methodName, testFile);
+            writer.write(testFile + ","+methodName+"," + String.join(",",
+                    Arrays.stream(mutationResults).mapToObj(String::valueOf).toArray(String[]::new)));
+            writer.newLine();
+        }
+        return finalResult;
+
+    }
+
+    private int[]  performTestOnMethod(String fullClassName, String methodName, String testFile) throws IOException {
+        Path testPath = Paths.get(testFile);
+        String fullTestName = extractPackage(fullClassName)+testPath.getFileName().toString().replace(".java", "");
+
+
+        TestProcessor testProcessor = new TestProcessor(fullTestName);
+        String finalCode = null;
+        try {
+            finalCode = new String(Files.readAllBytes(testPath), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        ClassRunner cs;
+        try {
+            cs = new ClassRunner(config, fullClassName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        String methodSignature = "";
+        for (Map.Entry<String, String> entry : cs.classInfo.methodSigs.entrySet()) {
+            if (entry.getKey().startsWith(methodName + "(")) {
+                methodSignature = entry.getKey(); // Return the matching key
+            }
+        }
+        if(methodSignature.isEmpty()){
+            return new int[]{-1,-1};
+        }
+        //Class fullname:com.ib.client.UnderComp method:equals signature:equals(Object)
+        System.out.println("Class fullname:"+fullClassName+" method:"+methodName+" signature:"+methodSignature);
+
+        MethodInfo methodInfo = ClassRunner.getMethodInfo(config, cs.classInfo, methodSignature);
+
+        PromptInfo promptInfo = AbstractRunner.generatePromptInfoWithoutDep(config,cs.classInfo,methodInfo);
+
+        return runMutation(fullTestName.trim(), promptInfo, finalCode, testProcessor, config);
+    }
+
+    private int[]  performMutationTestClass(String fullClassName,String testFile) throws IOException {
+        ClassRunner cs;
+        try {
+            cs = new ClassRunner(config, fullClassName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String[] methodNames = extractMethodNames(cs.classInfo.methodSigs);
+        int[] finalResult = new int[]{-1, -1, -1, -1, -1, -1,-1,methodNames.length};
+        for (String methodName : methodNames) {
+            int [] testResults = performTestOnMethod(fullClassName, methodName, testFile);
+            if(testResults[1] != -1){
+                int successTests = testResults[0]-testResults[1];
+                if(testResults[0]>finalResult[0]){
+                    finalResult[0] = successTests;
+                }
+            }
+
+            int[] mutationResults = performMutationTest(fullClassName, methodName, testFile);
+            for (int i = 0; i < mutationResults.length; i++) {
+                if (mutationResults[i] > testResults[1]) {
+                    finalResult[i] = mutationResults[i]-testResults[1];
+                }
+            }
+        }
+
+        return finalResult;
     }
 
     private int[]  performMutationTest(String fullClassName,String testFile, BufferedWriter writer) throws IOException {
