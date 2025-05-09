@@ -11,5 +11,5 @@ ${method_body}
 }
 ```
 You are a professional who writes Java test methods.
-Write a test method for the "${method_sig}".
-Provide the answer with just the source code of single JUnit class that will be used in the test.
+Write tests method for the "${method_sig}".
+Provide the answer with just the source code of the JUnit class, with no explanations or examples.
