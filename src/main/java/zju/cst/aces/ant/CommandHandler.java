@@ -5,6 +5,7 @@ import zju.cst.aces.api.Task;
 import zju.cst.aces.api.config.*;
 import zju.cst.aces.api.impl.RunnerImpl;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class CommandHandler {
@@ -66,6 +67,13 @@ public class CommandHandler {
                     commad = command[1];
                 }
                 System.out.println("Test ok "+commad);
+                break;
+            case "revisetests":
+                System.out.println("Revising tests in project: " + config.project.getBasedir());
+                TestRunnerAndReporter runner = new TestRunnerAndReporter(config);
+                Path projectRoot = Paths.get(config.project.getBasedir().toURI());
+                runner.runTestsAndGenerateReport(projectRoot);
+                System.out.println("Test revision finished. Report generated.");
                 break;
             default:
                 System.out.println("Unknown command: " + command);
